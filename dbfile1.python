@@ -1,0 +1,50 @@
+import mysql.connector
+from mysql.connector import Error
+
+def create_connection():
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',        # Change to your MySQL host
+            user='root',             # Change to your MySQL username
+            password='password',     # Change to your MySQL password
+            database='test_db'       # Change to your target database
+        )
+        if connection.is_connected():
+            print("Connected to MySQL database")
+            return connection
+    except Error as e:
+        print(f"Error connecting to MySQL: {e}")
+        return None
+
+def create_table(connection):
+    cursor = connection.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255),
+            email VARCHAR(255)
+        )
+    """)
+    connection.commit()
+    print("Table `users` ensured to exist")
+
+def insert_dummy_data(connection):
+    cursor = connection.cursor()
+    dummy_data = [
+        ("Alice", "alice@example.com"),
+        ("Bob", "bob@example.com"),
+        ("Charlie", "charlie@example.com")
+    ]
+    cursor.executemany("INSERT INTO users (name, email) VALUES (%s, %s)", dummy_data)
+    connection.commit()
+    print(f"{cursor.rowcount} records inserted.")
+
+def main():
+    connection = create_connection()
+    if connection:
+        create_table(connection)
+        insert_dummy_data(connection)
+        connection.close()
+
+if __name__ == "__main__":
+    main()
