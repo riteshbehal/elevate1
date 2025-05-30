@@ -1,2 +1,1 @@
-# elevate1
-for demo
+this repository is for learning purpose 
